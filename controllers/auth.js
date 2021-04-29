@@ -9,7 +9,7 @@ exports.login = async (req, res, next) => {
 
 	// Check if email and password is provided
 	if (!email || !password) {
-		return next(new ErrorResponse('Please provide an email and password', 400))
+		return next(new ErrorResponse('L12 Please provide an email and password', 400))
 	}
 
 	try {
@@ -17,14 +17,14 @@ exports.login = async (req, res, next) => {
 		const user = await User.findOne({ email }).select('+password')
 
 		if (!user) {
-			return next(new ErrorResponse('Invalid credentials', 401))
+			return next(new ErrorResponse('L20 Invalid credentials', 401))
 		}
 
 		// Check that password match
 		const isMatch = await user.matchPassword(password)
 
 		if (!isMatch) {
-			return next(new ErrorResponse('Invalid credentials', 401))
+			return next(new ErrorResponse('L27 Invalid credentials', 401))
 		}
 
 		sendToken(user, 200, res)
@@ -59,7 +59,7 @@ exports.forgotPassword = async (req, res, next) => {
 		const user = await User.findOne({ email })
 
 		if (!user) {
-			return next(new ErrorResponse('No email could not be sent', 404))
+			return next(new ErrorResponse('L62 No email could not be sent', 404))
 		}
 
 		// Reset Token Gen and add to database hashed (private) version of token
@@ -80,11 +80,11 @@ exports.forgotPassword = async (req, res, next) => {
 		try {
 			await sendEmail({
 				to: user.email,
-				subject: 'Password Reset Request',
+				subject: 'L83 Password Reset Request',
 				text: message
 			})
 
-			res.status(200).json({ success: true, data: 'Email Sent' })
+			res.status(200).json({ success: true, data: 'L87 Email Sent' })
 		} catch (err) {
 			console.log(err)
 
@@ -93,7 +93,7 @@ exports.forgotPassword = async (req, res, next) => {
 
 			await user.save()
 
-			return next(new ErrorResponse('Email could not be sent', 500))
+			return next(new ErrorResponse('L96 Email could not be sent', 500))
 		}
 	} catch (err) {
 		next(err)
@@ -112,7 +112,7 @@ exports.resetPassword = async (req, res, next) => {
 		})
 
 		if (!user) {
-			return next(new ErrorResponse('Invalid Token', 400))
+			return next(new ErrorResponse('L115 Invalid Token', 400))
 		}
 
 		user.password = req.body.password
@@ -123,7 +123,7 @@ exports.resetPassword = async (req, res, next) => {
 
 		res.status(201).json({
 			success: true,
-			data: 'Password Updated Success',
+			data: 'L126 Password Updated Success',
 			token: user.getSignedJwtToken()
 		})
 	} catch (err) {
